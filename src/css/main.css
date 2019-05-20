@@ -1,0 +1,11 @@
+@keyframes rotation {
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 1;
+    }
+}
