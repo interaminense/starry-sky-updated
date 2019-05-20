@@ -115,14 +115,14 @@ const createClipart = () => {
 }
 
 function renderLayers() {
-    //background
-    main.appendChild(createBackground());
-
-    //constellation
-    main.appendChild(createConstellation());
-
-    //clipart
-    main.appendChild(createClipart());
+    main.append(
+        //background
+        createBackground(),
+        //constellation
+        createConstellation(),
+        //clipart
+        createClipart()
+    );
 }
 
 window.onload = renderLayers;
