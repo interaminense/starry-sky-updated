@@ -57,7 +57,7 @@ const createStar = (size = 1, pulse = 1) => {
     return star;
 }
 
-createConstellation = () => {
+const createConstellation = () => {
     const constellation = document.createElement('div');
 
     for (let i = 0; i < TOTAL_STARS; i++) {
@@ -114,7 +114,7 @@ const createClipart = () => {
     return clipart;
 }
 
-function renderLayers() {
+function render() {
     main.append(
         //background
         createBackground(),
@@ -125,4 +125,4 @@ function renderLayers() {
     );
 }
 
-window.onload = renderLayers;
+window.addEventListener('DOMContentLoaded', () => render())
