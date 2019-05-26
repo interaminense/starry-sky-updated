@@ -9,3 +9,24 @@
         opacity: 1;
     }
 }
+
+html {
+    overflow: hidden;
+    height: 100vh;
+}
+
+.box  {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+}
+
+.box.left {
+    left: 0
+}
+
+.box.right {
+    right: 0
+}

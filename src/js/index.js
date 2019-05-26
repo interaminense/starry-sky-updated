@@ -1,23 +1,3 @@
-const main = document.querySelector('#main');
-
-const SIZE = {
-    width: window.innerWidth,
-    height: window.innerHeight
-}
-
-const STYLE_FULL_SIZE = {
-    bottom: 0,
-    left: 0,
-    margin: 'auto',
-    position: 'absolute',
-    right: 0,
-    top: 0
-}
-
-const TIME_ROTATE = 240;
-
-const TOTAL_STARS = 1000;
-
 const setStyle = (element, style) => {
     for (item in style) {
         element.style[item] = style[item];
@@ -31,25 +11,24 @@ const getRandom = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const getRandonPosition = () => ({
-    left: `${getRandom(0, SIZE.width * 2)}px`,
-    top: `${getRandom(0, SIZE.height * 2)}px`
+const getRandonPosition = (width, height) => ({
+    left: `${getRandom(0, width * 2)}px`,
+    top: `${getRandom(0, height * 2)}px`
 })
 
-const createStar = (size = 1, pulse = 1) => {
+const createStar = (size = 1, pulse = 1, backgroundColor, width, height) => {
     const star = document.createElement('div');
-    const {left, top} = getRandonPosition();
-    
+    const {left, top} = getRandonPosition(width, height);
+
     const style = {
         animation: `pulse ${pulse}s linear infinite`,
-        backgroundColor: 'white',
+        backgroundColor,
         borderRadius: `${size}px`,
         height: `${size}px`,
-        left,
         opacity: `0.${size}`,
         position: 'absolute',
-        top,
-        width: `${size}px`
+        width: `${size}px`,
+        inset:`${top} 0 0 ${left}`,
     }
 
     setStyle(star, style)
@@ -57,26 +36,25 @@ const createStar = (size = 1, pulse = 1) => {
     return star;
 }
 
-const createConstellation = () => {
+const createConstellation = (stars, time, color, width, height) => {
     const constellation = document.createElement('div');
 
-    for (let i = 0; i < TOTAL_STARS; i++) {
+    for (let i = 0; i < stars; i++) {
         const size = getRandom(1, 4);
         const pulse = getRandom(1, 6);
-        const star = createStar(size, pulse);
+        const star = createStar(size, pulse, color, width, height);
 
         constellation.appendChild(star)
     }
 
     const style = {
-        animation: `rotation ${TIME_ROTATE}s linear infinite`,
-        height: `${SIZE.height * 2}px`,
-        left: `-${SIZE.width / 2}px`,
-        position: 'fixed',
-        top: `-${SIZE.height / 2}px`,
+        animation: `rotation ${time}s linear infinite`,
+        height: `${height * 2}px`,
+        position: 'absolute',
         transform: 'rotate(0deg)',
         transformOrigin: 'center',
-        width: `${SIZE.width * 2}px`
+        width: `${width * 2}px`,
+        inset: `-${height / 2}px 0 0 -${width / 2}px`
     }
 
     setStyle(constellation, style)
@@ -84,19 +62,21 @@ const createConstellation = () => {
     return constellation;
 }
 
-const createBackground = () => {
-    const background = document.createElement('div');
+const createBackground = (background, width, height) => {
+    const backgroundNode = document.createElement('div');
 
     const style = {
-        ...STYLE_FULL_SIZE,
-        height: `${SIZE.height}px`,
-        width: `${SIZE.width}px`,
-        background: 'linear-gradient(#090708 50%, #121735)'
+        margin: 'auto',
+        position: 'absolute',
+        inset: '0 0 0 0',
+        height: `${height}px`,
+        width: `${width}px`,
+        background
     }
 
-    setStyle(background, style);
+    setStyle(backgroundNode, style);
 
-    return background;
+    return backgroundNode;
 }
 
 const createClipart = () => {
@@ -104,9 +84,12 @@ const createClipart = () => {
     clipart.src = './src/img/clipart.png';
 
     const style = {
-        ...STYLE_FULL_SIZE,
-        top: 'initial',
-        maxWidth: '50%'
+        margin: 'auto',
+        position: 'absolute',
+        maxWidth: '50%',
+        left: 0,
+        bottom: 0,
+        right: 0
     }
 
     setStyle(clipart, style)
@@ -114,15 +97,80 @@ const createClipart = () => {
     return clipart;
 }
 
-function render() {
-    main.append(
-        //background
-        createBackground(),
-        //constellation
-        createConstellation(),
-        //clipart
-        createClipart()
-    );
+const createMoon = backgroundColor => {
+    let moon =document.createElement('div');
+
+    const styleMoon = {
+        width: '100%',
+        height: '100%',
+        backgroundColor,
+        border: '0 none',
+        borderRadius: '50%'
+    }
+
+    setStyle(moon, styleMoon);
+
+    const box = document.createElement('div');
+    box.append(moon);
+
+    const styleBox = {
+        margin: 'auto',
+        position: 'absolute',
+        borderRadius: '50%',
+        boxShadow: `0px 0px 100px 20px ${backgroundColor}`,
+        height: '100px',
+        inset: 'calc(70% - 100px) calc(70% - 100px) 0',
+        width: '100px',
+    }
+
+    setStyle(box, styleBox);
+
+    return box;
 }
 
-window.addEventListener('DOMContentLoaded', () => render())
+const getTheme = style => {
+    let theme = {
+        backgroundColor: 'linear-gradient(#090708 50%, #2A3990)',
+        starColor: 'white',
+        moonColor: 'white'
+    };
+
+    if (style === 'light') {
+        theme = {
+            ...theme,
+            backgroundColor: 'linear-gradient(yellow 50%, red)',
+            starColor: 'black',
+            moonColor: 'yellow'
+        }
+    }
+
+    return theme;
+}
+
+function StarrySky(element, attrs) {
+    const node = document.querySelector(element);
+
+    const {
+        stars = 200,
+        time = 200,
+        theme = 'dark',
+        width = node.clientWidth,
+        height = node.clientHeight
+    } = attrs;
+
+    const {backgroundColor, starColor, moonColor} = getTheme(theme);
+
+    node.append(
+        //background
+        createBackground(backgroundColor, width, height),
+
+        //constellation
+        createConstellation(stars, time, starColor, width, height),
+
+        //moon
+        createMoon(moonColor),
+
+        //clipart
+        createClipart()
+    )
+}

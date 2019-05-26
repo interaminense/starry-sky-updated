@@ -7,10 +7,24 @@
     <title>Starry sky</title>
 
     <link rel="stylesheet" href="./src/css/main.css">
+
+
 </head>
 <body>
-    <div id="main"></div>
+    <div id="themeDark" class="box left"></div>
+    <div id="themeLight" class="box right"></div>
 
     <script src="./src/js/index.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            new StarrySky('#themeDark', {
+                theme: 'dark',
+            });
+
+            new StarrySky('#themeLight', {
+                theme: 'light',
+            });
+        })
+    </script>
 </body>
 </html>
